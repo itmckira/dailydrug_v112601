@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <title>每日用藥紀錄</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+	:root {
+	  /* Colors */
+	  --color-primary: #F8C7CC;
+	  --color-accent: #FFAFA0;
+	  --color-bg: #FFF9F7;
+	  --color-text-dark: #4A4A4A;
+	  --color-text-light: #9A9A9A;
+
+	  /* 薄荷綠 */
+	  --color-mint: #7CCB9A;
+	  --color-success: var(--color-mint);
+
+	  --color-border: #E6E0DD;
+	  --color-card-bg: #FFFFFF;
+
+	  /* Radius */
+	  --radius-xl: 24px;
+	  --radius-lg: 16px;
+	  --radius-md: 12px;
+	  --radius-pill: 999px;
+
+	  /* Shadow */
+	  --shadow-soft: 0 8px 20px rgba(0, 0, 0, 0.06);
+
+	  /* Spacing */
+	  --space-xs: 4px;
+	  --space-sm: 8px;
+	  --space-md: 12px;
+	  --space-lg: 16px;
+	  --space-xl: 24px;
+
+	  /* Font */
+	  --font-title-lg: 22px;
+	  --font-title-md: 18px;
+	  --font-body: 14px;
+	  --font-caption: 12px;
+	}
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        sans-serif;
+      background: var(--color-bg);
+      color: var(--color-text-dark);
+    }
+
+    /* -------- Login Page -------- */
+
+    #loginPage {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      background: var(--color-bg);
+    }
+
+    .login-card {
+      width: 100%;
+      max-width: 420px;
+      background: var(--color-card-bg);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-soft);
+      padding: var(--space-xl) var(--space-lg);
+      text-align: center;
+    }
+
+    .login-logo-wrap {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 16px;
+    }
+
+    .login-logo {
+      width: 72px;
+      height: 72px;
+      border-radius: 24px;
+      object-fit: cover;
+      background: #ffd9df;
+      box-shadow: var(--shadow-soft);
+    }
+
+    .login-title {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .login-subtitle {
+      font-size: var(--font-caption);
+      color: var(--color-text-light);
+      margin-bottom: 20px;
+    }
+
+    .login-fields {
+      text-align: left;
+      margin-bottom: 16px;
+    }
+
+    .login-field {
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 10px;
+      font-size: var(--font-caption);
+      color: var(--color-text-light);
+    }
+
+    .login-field span {
+      margin-bottom: 4px;
+    }
+
+    .login-field input {
+      padding: 8px 10px;
+      font-size: var(--font-body);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--color-border);
+      outline: none;
+    }
+
+    .login-note {
+      font-size: 11px;
+      color: var(--color-text-light);
+      margin-bottom: 16px;
+    }
+
+    .login-btn {
+      width: 100%;
+      border: none;
+      padding: 12px 0;
+      border-radius: var(--radius-pill);
+      background: linear-gradient(
+        135deg,
+        var(--color-primary),
+        var(--color-accent)
+      );
+      color: #fff;
+      font-weight: 600;
+      font-size: var(--font-body);
+      cursor: pointer;
+      margin-bottom: 8px;
+    }
+
+    .login-footer {
+      font-size: 11px;
+      color: var(--color-text-light);
+    }
+
+    /* -------- App Shell -------- */
+
+    #appShell {
+      max-width: 480px;
+      margin: 0 auto;
+      min-height: 100vh;
+      padding: var(--space-lg) var(--space-lg) 72px;
+      background: var(--color-bg);
+      display: none; /* 先隱藏，登入後顯示 */
+    }
+
+    .app-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: var(--space-lg);
+    }
+
+    .app-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .app-logo {
+      width: 40px;
+      height: 40px;
+      border-radius: 16px;
+      object-fit: cover;
+      box-shadow: var(--shadow-soft);
+      background: #ffd9df;
+    }
+
+    .app-title {
+      font-size: var(--font-title-lg);
+      font-weight: 700;
+    }
+
+    .icon-btn {
+      border: none;
+      background: transparent;
+      font-size: 20px;
+      cursor: pointer;
+    }
+
+    /* Top nav tabs for pages */
+    .top-nav {
+      display: flex;
+      gap: 8px;
+      margin-bottom: var(--space-lg);
+      flex-wrap: wrap;
+    }
+
+    .nav-btn {
+      flex: 1;
+      padding: 8px 0;
+      border-radius: var(--radius-pill);
+      border: 1px solid transparent;
+      background: transparent;
+      font-size: 14px;
+      cursor: pointer;
+      color: var(--color-text-dark);
+    }
+
+    .nav-btn--active {
+      background: linear-gradient(
+        135deg,
+        var(--color-primary),
+        var(--color-accent)
+      );
+      color: #fff;
+      border-color: transparent;
+      font-weight: 600;
+    }
+
+    .app-main {
+      min-height: 60vh;
+    }
+
+    .page {
+      display: none;
+      animation: fadeIn 0.2s ease-out;
+    }
+
+    .page--active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(4px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Card */
+    .card {
+      background: var(--color-card-bg);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-soft);
+      padding: var(--space-lg);
+      margin-bottom: var(--space-lg);
+    }
+
+    .caption {
+      font-size: var(--font-caption);
+      color: var(--color-text-light);
+    }
+
+    .center {
+      text-align: center;
+    }
+
+    .section-title {
+      font-size: var(--font-title-md);
+      margin: 0 0 var(--space-sm);
+    }
+
+    /* Progress bar */
+    .progress-bar {
+      position: relative;
+      height: 8px;
+      border-radius: var(--radius-pill);
+      background: var(--color-bg);
+      overflow: hidden;
+      margin-top: 10px;
+    }
+
+    .progress-value {
+      height: 100%;
+      background: linear-gradient(
+        135deg,
+        var(--color-primary),
+        var(--color-mint)
+      );
+      width: 66%;
+    }
+
+    /* List items */
+    .list {
+      margin-top: var(--space-sm);
+    }
+
+    .med-item,
+    .reminder-card {
+      display: flex;
+      align-items: center;
+      padding: 10px 12px;
+      border-radius: var(--radius-lg);
+      background: var(--color-card-bg);
+      margin-bottom: 8px;
+    }
+
+    .med-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: var(--radius-pill);
+      background: rgba(248, 199, 204, 0.4);
+      margin-right: 10px;
+    }
+
+    .med-info {
+      flex: 1;
+    }
+
+    .med-name {
+      font-size: var(--font-body);
+      color: var(--color-text-dark);
+    }
+
+    .med-sub {
+      font-size: var(--font-caption);
+      color: var(--color-text-light);
+    }
+
+    .med-check {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      border: 1px solid var(--color-border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      color: var(--color-text-light);
+    }
+
+    .med-check--done {
+      background: var(--color-success);
+      border-color: var(--color-success);
+      color: #fff;
+    }
+
+    /* Tabs inside Reminder page */
+    .tabs {
+      display: flex;
+      padding: 4px;
+      border-radius: var(--radius-pill);
+      background: #ffffff;
+      margin-bottom: 12px;
+    }
+
+    .tab {
+      flex: 1;
+      border-radius: var(--radius-pill);
+      border: none;
+      background: transparent;
+      padding: 6px 0;
+      font-size: 13px;
+      color: var(--color-text-dark);
+      cursor: pointer;
+    }
+
+    .tab--active {
+      background: var(--color-primary);
+      color: #ffffff;
+      font-weight: 600;
+    }
+
+    /* Switch */
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 40px;
+      height: 22px;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      inset: 0;
+      background-color: #ddd;
+      border-radius: 999px;
+      transition: 0.2s;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 18px;
+      width: 18px;
+      left: 2px;
+      top: 2px;
+      border-radius: 50%;
+      background-color: white;
+      transition: 0.2s;
+    }
+
+    .switch input:checked + .slider {
+      background-color: var(--color-mint);
+    }
+
+    .switch input:checked + .slider:before {
+      transform: translateX(18px);
+    }
+
+    /* Fields */
+    .field {
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 10px;
+      font-size: var(--font-caption);
+      color: var(--color-text-light);
+    }
+
+    .field span {
+      margin-bottom: 4px;
+    }
+
+    .field input,
+    .field select {
+      padding: 8px 10px;
+      font-size: var(--font-body);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--color-border);
+      outline: none;
+      background: #fff;
+    }
+
+    .field textarea {
+      padding: 8px 10px;
+      font-size: var(--font-body);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--color-border);
+      outline: none;
+      min-height: 80px;
+      resize: vertical;
+      background: #fff;
+    }
+
+    .field-switch {
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    /* Buttons */
+    .fab-primary {
+      position: fixed;
+      right: 50%;
+      transform: translateX(50%);
+      bottom: 16px;
+      width: calc(100% - 32px);
+      max-width: 480px;
+      border: none;
+      border-radius: var(--radius-pill);
+      padding: 12px 0;
+      background: linear-gradient(
+        135deg,
+        var(--color-primary),
+        var(--color-accent)
+      );
+      color: #fff;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .btn-row {
+      display: flex;
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .btn-primary,
+    .btn-secondary {
+      flex: 1;
+      padding: 12px 0;
+      border-radius: var(--radius-pill);
+      font-size: var(--font-body);
+      cursor: pointer;
+    }
+
+    .btn-primary {
+      border: none;
+      background: linear-gradient(
+        135deg,
+        var(--color-primary),
+        var(--color-accent)
+      );
+      color: #fff;
+      font-weight: 600;
+    }
+
+    .btn-secondary {
+      border: 1px solid var(--color-border);
+      background: transparent;
+      color: var(--color-text-dark);
+    }
+
+    @media (min-width: 768px) {
+      .fab-primary {
+        right: calc(50% - 240px);
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Login Screen -->
+  <div id="loginPage">
+    <div class="login-card">
+      <div class="login-logo-wrap">
+        <img src="logo.png" alt="每日用藥 Logo" class="login-logo" />
+      </div>
+      <div class="login-title">每日用藥紀錄</div>
+      <div class="login-subtitle">簡單記錄每天的用藥狀況，照顧自己也照顧家人。</div>
+
+      <div class="login-fields">
+        <label class="login-field">
+          <span>使用者姓名</span>
+          <input type="text" id="loginName" placeholder="例如：小美" />
+        </label>
+        <label class="login-field">
+          <span>Email（選填）</span>
+          <input type="email" id="loginEmail" placeholder="example@mail.com" />
+        </label>
+      </div>
+
+      <div class="login-note">
+        目前為示範介面，資料只會暫存於瀏覽器，不會上傳到伺服器。
+      </div>
+
+      <button class="login-btn" id="btnLogin">開始使用</button>
+      <div class="login-footer">點擊「開始使用」即代表你同意本 App 的使用條款。</div>
+    </div>
+  </div>
+
+  <!-- Main App Shell -->
+  <div id="appShell">
+    <header class="app-header">
+      <div class="app-left">
+        <img src="logo.png" alt="每日用藥 Logo" class="app-logo" />
+        <div class="app-title">每日用藥</div>
+      </div>
+      <!-- 齒輪：唯一進入「設定」頁的入口 -->
+      <button class="icon-btn" id="btnSettings" title="設定">⚙</button>
+    </header>
+
+    <!-- Page nav（只保留 3 個頁面） -->
+    <div class="top-nav">
+      <button class="nav-btn nav-btn--active" data-target="home">首頁</button>
+      <button class="nav-btn" data-target="reminder">用藥提醒</button>
+      <button class="nav-btn" data-target="add">新增用藥</button>
+      <!-- 不再有設定按鈕 -->
+    </div>
+
+    <main class="app-main">
+      <!-- Home Page -->
+      <section class="page page--active" data-page="home">
+        <div class="card">
+          <p class="caption">今天 · 11/26 (三)</p>
+          <h2 style="margin: 4px 0 8px;">已服用 2 / 3 顆</h2>
+          <div class="progress-bar">
+            <div class="progress-value"></div>
+          </div>
+        </div>
+
+        <h3 class="section-title">今天的用藥</h3>
+        <div class="list">
+          <div class="med-item">
+            <div class="med-icon"></div>
+            <div class="med-info">
+              <div class="med-name">維他命 D</div>
+              <div class="med-sub">1 顆 · 08:00</div>
+            </div>
+            <div class="med-check med-check--done">✓</div>
+          </div>
+
+          <div class="med-item">
+            <div class="med-icon"></div>
+            <div class="med-info">
+              <div class="med-name">鐵劑</div>
+              <div class="med-sub">1 顆 · 13:00</div>
+            </div>
+            <div class="med-check">✓</div>
+          </div>
+
+          <div class="med-item">
+            <div class="med-icon"></div>
+            <div class="med-info">
+              <div class="med-name">過敏藥</div>
+              <div class="med-sub">1 顆 · 睡前</div>
+            </div>
+            <div class="med-check">✓</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Reminder Page -->
+      <section class="page" data-page="reminder">
+        <div class="card">
+          <div class="tabs">
+            <button class="tab tab--active">所有提醒</button>
+            <button class="tab">今天</button>
+            <button class="tab">已完成</button>
+          </div>
+
+          <div class="list">
+            <div class="reminder-card">
+              <div>
+                <div class="med-name">高血壓藥</div>
+                <div class="med-sub">每天 21:00</div>
+              </div>
+              <label class="switch">
+                <input type="checkbox" checked />
+                <span class="slider"></span>
+              </label>
+            </div>
+
+            <div class="reminder-card">
+              <div>
+                <div class="med-name">胃藥</div>
+                <div class="med-sub">每天 08:00</div>
+              </div>
+              <label class="switch">
+                <input type="checkbox" checked />
+                <span class="slider"></span>
+              </label>
+            </div>
+
+            <div class="reminder-card">
+              <div>
+                <div class="med-name">維他命 C</div>
+                <div class="med-sub">每週一三五 09:00</div>
+              </div>
+              <label class="switch">
+                <input type="checkbox" />
+                <span class="slider"></span>
+              </label>
+            </div>
+          </div>
+
+          <p class="caption center">
+            提醒時間到會顯示通知與聲音提示。
+          </p>
+        </div>
+      </section>
+
+      <!-- Add Medicine Page -->
+      <section class="page" data-page="add">
+        <div class="card">
+          <label class="field">
+            <span>藥品名稱</span>
+            <input type="text" placeholder="例如：維他命 D" />
+          </label>
+          <label class="field">
+            <span>劑量</span>
+            <input type="text" placeholder="例如：1 顆、5ml" />
+          </label>
+          <label class="field">
+            <span>時間</span>
+            <input type="time" />
+          </label>
+          <label class="field">
+            <span>重複頻率</span>
+            <select>
+              <option>每天</option>
+              <option>平日</option>
+              <option>自訂</option>
+            </select>
+          </label>
+
+          <label class="field field-switch">
+            <span>需要提醒通知</span>
+            <label class="switch">
+              <input type="checkbox" checked />
+              <span class="slider"></span>
+            </label>
+          </label>
+        </div>
+
+        <div class="btn-row">
+          <button class="btn-secondary" type="button">取消</button>
+          <button class="btn-primary" type="button">儲存</button>
+        </div>
+      </section>
+
+      <!-- Settings Page（只有齒輪可以進入） -->
+      <section class="page" data-page="settings">
+        <!-- 基本資料 -->
+        <div class="card">
+          <h3 class="section-title">基本資料</h3>
+
+          <label class="field">
+            <span>姓名</span>
+            <input type="text" id="profileName" placeholder="你的名字" />
+          </label>
+
+          <label class="field">
+            <span>生日</span>
+            <input type="date" id="profileBirthday" />
+          </label>
+
+          <label class="field">
+            <span>性別</span>
+            <select id="profileGender">
+              <option value="">不指定</option>
+              <option value="female">女性</option>
+              <option value="male">男性</option>
+              <option value="other">其他 / 不透露</option>
+            </select>
+          </label>
+
+          <label class="field">
+            <span>身高（cm）</span>
+            <input type="number" id="profileHeight" placeholder="例如：160" />
+          </label>
+
+          <label class="field">
+            <span>體重（kg）</span>
+            <input type="number" id="profileWeight" placeholder="例如：50" />
+          </label>
+
+          <label class="field">
+            <span>主治醫師 / 診所（選填）</span>
+            <input type="text" id="profileDoctor" placeholder="例如：王大明 醫師 / XX 診所" />
+          </label>
+
+          <label class="field">
+            <span>緊急聯絡人姓名</span>
+            <input type="text" id="profileEmergencyName" placeholder="例如：媽媽" />
+          </label>
+
+          <label class="field">
+            <span>緊急聯絡人電話</span>
+            <input type="tel" id="profileEmergencyPhone" placeholder="例如：09xx-xxx-xxx" />
+          </label>
+
+          <label class="field">
+            <span>過敏史 / 特別注意事項</span>
+            <textarea id="profileNotes" placeholder="例如：對青黴素過敏、糖尿病需注意血糖等"></textarea>
+          </label>
+        </div>
+
+        <!-- App 偏好設定 -->
+        <div class="card">
+          <h3 class="section-title">App 偏好設定</h3>
+
+          <label class="field field-switch">
+            <span>啟用通知提醒</span>
+            <label class="switch">
+              <input type="checkbox" checked />
+              <span class="slider"></span>
+            </label>
+          </label>
+
+          <label class="field">
+            <span>提醒鈴聲</span>
+            <select>
+              <option>柔和提示音</option>
+              <option>一般通知音</option>
+              <option>靜音（僅顯示通知）</option>
+            </select>
+          </label>
+
+          <label class="field">
+            <span>主題模式</span>
+            <select>
+              <option>粉色主題（預設）</option>
+              <option>淺色主題</option>
+              <option>深色主題</option>
+            </select>
+          </label>
+
+          <label class="field">
+            <span>每日小提示（備註）</span>
+            <textarea placeholder="例如：飯後 30 分鐘再吃藥、多喝水等小提醒"></textarea>
+          </label>
+        </div>
+
+        <!-- 資料匯出 / 備份 -->
+        <div class="card">
+          <h4 style="margin-top:0;">資料匯出 / 備份</h4>
+          <p class="caption">
+            目前為示意按鈕，未來可接 GitHub / Google Drive / 自家後端 API。
+          </p>
+          <div class="btn-row">
+            <button class="btn-secondary" type="button">匯出紀錄</button>
+            <button class="btn-primary" type="button">匯入紀錄</button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- global FAB on home page only, 由 JS 控制顯示 -->
+    <button class="fab-primary" id="fabAdd">＋ 新增用藥</button>
+  </div>
+
+  <script>
+    const navButtons = document.querySelectorAll(".nav-btn");
+    const pages = document.querySelectorAll(".page");
+    const fabAdd = document.getElementById("fabAdd");
+    const btnSettings = document.getElementById("btnSettings");
+
+    const loginPage = document.getElementById("loginPage");
+    const appShell = document.getElementById("appShell");
+    const btnLogin = document.getElementById("btnLogin");
+    const loginNameInput = document.getElementById("loginName");
+    const profileNameInput = document.getElementById("profileName");
+
+    function showPage(name) {
+      pages.forEach((p) => {
+        const active = p.dataset.page === name;
+        p.classList.toggle("page--active", active);
+      });
+
+      navButtons.forEach((btn) => {
+        const active = btn.dataset.target === name;
+        btn.classList.toggle("nav-btn--active", active);
+      });
+
+      // FAB 只在首頁顯示
+      if (name === "home") {
+        fabAdd.style.display = "block";
+      } else {
+        fabAdd.style.display = "none";
+      }
+    }
+
+    navButtons.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const target = btn.dataset.target;
+        showPage(target);
+      });
+    });
+
+    fabAdd.addEventListener("click", () => {
+      showPage("add");
+    });
+
+    // 右上角齒輪 → 設定頁
+    btnSettings.addEventListener("click", () => {
+      showPage("settings");
+    });
+
+    // Login 按鈕：切換到 App，並帶姓名到設定頁
+    btnLogin.addEventListener("click", () => {
+      const name = loginNameInput.value.trim();
+      if (name) {
+        profileNameInput.value = name;
+      }
+      loginPage.style.display = "none";
+      appShell.style.display = "block";
+      showPage("home");
+    });
+  </script>
+</body>
+</html>
